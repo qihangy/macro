@@ -21,7 +21,7 @@ market data (Yahoo / FRED) → raw Parquet → indicators → signals
 - `site/` — build output that GitHub Pages deploys.
 - `data/raw/`, `data/processed/` — local Parquet, intentionally ignored by Git.
 - `tests/` — simple unit tests.
-- `.github/workflows/deploy.yml` — GitHub Pages build/deploy on pushes to `main` or manual runs.
+- `.github/workflows/deploy.yml` — GitHub Pages build/deploy on pushes to `main`, manual runs, and weekdays at 09:00 America/New_York.
 
 ## Step 1 — run locally (macOS/Linux)
 
@@ -89,12 +89,12 @@ pytest -q
 
    Substitute your actual GitHub username. GitHub authentication may use browser/credential manager or `gh auth login`.
 3. On the GitHub repo: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-4. Go to **Actions → Update and deploy dashboard → Run workflow**. Confirm **Run tests**, **Download data and build website**, and **Deploy** succeed. Pushes to `main` also trigger deployment. The workflow uses Python 3.13 and publishes only `site/`; local environments, downloaded data, generated site files, and `.env` files are excluded from Git by `.gitignore`.
+4. Go to **Actions → Update and deploy dashboard → Run workflow**. Confirm the `build` job (**Run tests**, **Download data, calculate signals, build site**) and the `deploy` job succeed. If `deploy` fails with `Get Pages site failed ... Not Found`, Pages is not enabled yet: re-do step 3 and make sure the choice is saved. Pushes to `main` also trigger deployment. The workflow uses Python 3.13 and publishes only `site/`; local environments, downloaded data, generated site files, and `.env` files are excluded from Git by `.gitignore`.
 5. Share `https://YOUR_USERNAME.github.io/macro/` after successful deployment. This URL is a template, not a pre-existing page.
 
 ### How updates work
 
-The workflow runs on **pushes to `main` and manual dispatch only**; no daily schedule is configured yet. On each successful run, the workflow downloads market data, computes signals, regenerates JSON, and publishes the `site/` directory as a GitHub Pages artifact. **No local computer needs to stay on.** The workflow does not upload raw Parquet to Git; GitHub runner storage is temporary, so the cloud job redownloads history on each run. The local files remain on your computer only. Consider private object storage (e.g., S3) if data volume grows.
+The workflow runs on **pushes to `main`, manual dispatch, and a schedule of 09:00 `America/New_York` Monday–Friday** (the cron entry uses GitHub's `timezone` key, so DST is handled automatically; GitHub may start scheduled runs a few minutes late). Scheduled runs only fire from the default branch. On each successful run, the workflow downloads market data, computes signals, regenerates JSON, and publishes the `site/` directory as a GitHub Pages artifact. **No local computer needs to stay on.** The workflow does not upload raw Parquet to Git; GitHub runner storage is temporary, so the cloud job redownloads history on each run. The local files remain on your computer only. Consider private object storage (e.g., S3) if data volume grows.
 
 **Important:** At 9 a.m. the US market is not yet closed. Signals are computed using the last *completed* US trading day; current-day incomplete Yahoo candle is excluded. FRED values are forward-aligned only to dates after their observation (up to seven days). When GLD is older than 6 calendar days or DGS2 older than 10, the pipeline **fails rather than pretending data is current**. Publishing may also fail if public data providers throttle GitHub Actions. Failed jobs leave the previously deployed page available; its `data_asof_date` remains visible. The dashboard currently does not show a separate automatic browser stale-data warning after an old deployment. Monitor GitHub Actions failures.
 

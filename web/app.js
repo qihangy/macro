@@ -71,7 +71,7 @@
       $('nav-input').value=g.default_portfolio_nav||20000;
     }catch(err){
       setText('asof','No published market data');setText('status-badge','SETUP REQUIRED');setText('pipeline-label','Awaiting first update');
-      $('error-banner').classList.remove('hidden');$('error-banner').textContent='No real market data has been published yet. Run: python scripts/daily_update.py. Local file:// previews cannot fetch JSON; serve site/ with python -m http.server.';
+      $('error-banner').classList.remove('hidden');$('error-banner').textContent='No real market data has been published yet. Run: python data_engineering/daily_update.py. Local file:// previews cannot fetch JSON; serve site/ with python -m http.server.';
       console.warn(err);
     }
     render();
