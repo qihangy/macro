@@ -16,6 +16,7 @@ from macro.data_sources.yahoo import download_prices
 from macro.data_sources.fred import download_series
 from macro.strategies.gold import calculate
 from macro.publishing.json_export import write_gold_payload
+from macro.publishing.backtest_export import write_backtest_payload
 
 
 def run(offline=False):
@@ -52,6 +53,8 @@ def run(offline=False):
     shutil.copy2(ROOT / "web/index.html", site / "index.html")
     shutil.copy2(ROOT / "web/style.css", site / "style.css")
     shutil.copy2(ROOT / "web/app.js", site / "app.js")
+    shutil.copy2(ROOT / "web/backtest.js", site / "backtest.js")
+    shutil.copy2(ROOT / "web/backtest-ui.js", site / "backtest-ui.js")
     (site / ".nojekyll").touch()
 
     if "GLD" not in prices or "DGS2" not in prices:
@@ -80,6 +83,8 @@ def run(offline=False):
     frame.to_parquet(output)
     payload = write_gold_payload(site / "data/gold_allocation.json", frame, strat,
                                  config["portfolio"]["default_nav"])
+    write_backtest_payload(site / "data/backtest.json", gld, frame, prices.get("SPY"),
+                           strat["sizing"]["max_weight"])
     # Each registered asset gets its own price curve. Other strategies stay clearly disabled.
     market = {}
     for symbol, series in prices.items():

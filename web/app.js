@@ -34,6 +34,14 @@
   function render(){
     document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
     setText('breadcrumb',tab);
+    const isBacktest=tab==='Backtest';
+    $('backtest-view').classList.toggle('hidden',!isBacktest);
+    [$('metrics'), ...document.querySelectorAll('.section-grid')].forEach(el=>el.classList.toggle('hidden',isBacktest));
+    if(isBacktest){
+      setText('page-title','Historical Backtest');
+      setText('page-subtitle','Run the Gold Allocation strategy on published historical data. No trades are placed.');
+      return;
+    }
     setText('page-title',tab==='Overview'?'Multi-Asset Overview':tab==='Commodity'?'Commodity Strategies':tab==='Equity'?'Equity Strategies':tab==='Rates'?'Rates Strategies':'FX Strategies');
     setText('page-subtitle',tab==='Overview'?'Cross-asset market context and systematic signal allocations.':tab==='Commodity'?'Gold allocation signal and volatility-targeted sizing.':`Daily market data for ${tab}. Strategy engines can be added independently.`);
     const a=tab==='Overview'||tab==='Commodity'?assets[2]:assets.find(e=>e[0]===tab);

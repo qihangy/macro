@@ -35,6 +35,9 @@ jobs:
       - name: Run tests
         run: python -m pytest -q
 
+      - name: Test browser backtest calculations
+        run: node --test tests/test_backtest.cjs
+
       # Last good raw data lets the pipeline fall back to cached GLD/DGS2 (still freshness-checked).
       - name: Restore cached market data
         uses: actions/cache@v6
@@ -51,7 +54,10 @@ jobs:
           test -f site/index.html
           test -f site/data/gold_allocation.json
           test -f site/data/market.json
-          python -c "import json; [json.load(open(f'site/data/{n}.json')) for n in ('gold_allocation', 'market')]"
+          test -f site/backtest.js
+          test -f site/backtest-ui.js
+          test -f site/data/backtest.json
+          python -c "import json; [json.load(open(f'site/data/{n}.json')) for n in ('gold_allocation', 'market', 'backtest')]"
 
       - uses: actions/upload-pages-artifact@v5
         with:
