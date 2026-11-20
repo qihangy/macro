@@ -1,0 +1,23 @@
+strategies:
+  gold_allocation:
+    label: Gold Allocation
+    asset: GLD
+    asset_class: Commodity
+    enabled: true
+    description: Long-only trend + nominal 2Y hurdle + volatility scaling
+    signals:
+      momentum:
+        windows: [126, 252]
+        weights: [0.5, 0.5]
+      rate_filter:
+        yield_series: DGS2
+        return_window: 252
+      volatility:
+        window: 63
+        target_vol: 0.15
+    sizing:
+      max_weight: 0.15
+      long_only: true
+portfolio:
+  default_nav: 20000
+  default_holdings: {GLD: 0}

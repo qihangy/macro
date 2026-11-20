@@ -1,0 +1,26 @@
+assets:
+  GLD:
+    name: Gold ETF
+    asset_class: Commodity
+    source: yahoo
+    active: true
+  SPY:
+    name: S&P 500 ETF
+    asset_class: Equity
+    source: yahoo
+    active: true
+  IEF:
+    name: 7-10Y Treasury ETF
+    asset_class: Rates
+    source: yahoo
+    active: true
+  UUP:
+    name: US Dollar ETF
+    asset_class: FX
+    source: yahoo
+    active: true
+  DGS2:
+    name: US 2Y Treasury Yield
+    asset_class: Rates
+    source: fred
+    active: true
